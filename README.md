@@ -192,4 +192,4 @@ GitHub:
 https://github.com/Gnaneshwarsreepathi
 
 LinkedIn:
-https://www.linkedin.com/in/YOUR-LINKEDIN-USERNAME/
+https://lnkd.in/p/eKr-uU3a
