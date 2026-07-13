@@ -678,14 +678,6 @@ This flow is the foundation of backend development.
 
 ---
 
-## GitHub Repository
-
-```md
-![GitHub Repository](images/github-repository.png)
-```
-
----
-
 # 🎓 What I Learned
 
 After completing this assignment, I gained practical experience with:
