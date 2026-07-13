@@ -1,12 +1,10 @@
-# Backend AI Week 1 Assignment
+# Backend AI Week 1
 
-This project is part of the FlyRank AI Backend Engineering Internship.
+This repository contains my Week 1 assignment for the FlyRank AI Backend Engineering Internship.
 
-## Features
+## Project Overview
 
-- FastAPI backend server
-- Two JSON endpoints
-- Tested using browser and curl
+A minimal FastAPI backend exposing two JSON endpoints.
 
 ## Endpoints
 
@@ -14,7 +12,7 @@ This project is part of the FlyRank AI Backend Engineering Internship.
 
 Returns a welcome message.
 
-Example response:
+Example:
 
 ```json
 {
@@ -24,9 +22,9 @@ Example response:
 
 ### GET /about
 
-Returns basic information.
+Returns information about the project.
 
-Example response:
+Example:
 
 ```json
 {
@@ -36,27 +34,15 @@ Example response:
 }
 ```
 
-## Run Locally
-
-Create a virtual environment:
+## Installation
 
 ```bash
 python3 -m venv venv
-```
-
-Activate it:
-
-```bash
 source venv/bin/activate
-```
-
-Install dependencies:
-
-```bash
 pip install -r requirements.txt
 ```
 
-Run the server:
+## Run
 
 ```bash
 uvicorn main:app --reload
