@@ -15,13 +15,6 @@
 
 ---
 
-# 🚀 Backend AI Engineering – Week 1
-## Building My First Backend API with FastAPI
-
-> **FlyRank AI Internship | Backend AI Engineering Track**
-
----
-
 # 📖 Introduction
 
 This repository contains my **Week 1 assignment** for the **FlyRank AI Backend Engineering Internship**.
