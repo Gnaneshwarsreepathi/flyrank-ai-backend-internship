@@ -1,14 +1,19 @@
 from fastapi import FastAPI, HTTPException, status
 from pydantic import BaseModel
+from typing import Optional
 
-
-# Create FastAPI application
 app = FastAPI()
 
 
-# Model used when a user creates a new task
+# Model used when creating a task
 class TaskCreate(BaseModel):
     title: str
+
+
+# Model used when updating a task
+class TaskUpdate(BaseModel):
+    title: Optional[str] = None
+    done: Optional[bool] = None
 
 
 # Temporary in-memory task storage
@@ -35,7 +40,7 @@ def home():
     }
 
 
-# Health check endpoint
+# Health check
 @app.get("/health")
 def health():
     return {
@@ -43,13 +48,13 @@ def health():
     }
 
 
-# Get all tasks
+# READ - Get all tasks
 @app.get("/tasks")
 def get_tasks():
     return tasks
 
 
-# Get a single task by ID
+# READ - Get one task by ID
 @app.get("/tasks/{task_id}")
 def get_task(task_id: int):
 
@@ -59,36 +64,86 @@ def get_task(task_id: int):
 
     raise HTTPException(
         status_code=404,
-        detail="Task not found"
+        detail=f"Task {task_id} not found"
     )
 
 
-# Create a new task
+# CREATE - Create a new task
 @app.post("/tasks", status_code=status.HTTP_201_CREATED)
 def create_task(task: TaskCreate):
 
-    # Check if the title is empty or contains only spaces
     if not task.title.strip():
         raise HTTPException(
             status_code=400,
             detail="Title cannot be empty"
         )
 
-    # Generate the next available task ID
     new_id = max(
         (existing_task["id"] for existing_task in tasks),
         default=0
     ) + 1
 
-    # Create the new task
     new_task = {
         "id": new_id,
         "title": task.title,
         "done": False
     }
 
-    # Add the new task to our temporary storage
     tasks.append(new_task)
 
-    # Return the newly created task
     return new_task
+
+
+# UPDATE - Update an existing task
+@app.put("/tasks/{task_id}")
+def update_task(task_id: int, updated_task: TaskUpdate):
+
+    # Reject an empty request body
+    if updated_task.title is None and updated_task.done is None:
+        raise HTTPException(
+            status_code=400,
+            detail="At least one field must be provided"
+        )
+
+    # Reject an empty title
+    if updated_task.title is not None and not updated_task.title.strip():
+        raise HTTPException(
+            status_code=400,
+            detail="Title cannot be empty"
+        )
+
+    for task in tasks:
+
+        if task["id"] == task_id:
+
+            if updated_task.title is not None:
+                task["title"] = updated_task.title
+
+            if updated_task.done is not None:
+                task["done"] = updated_task.done
+
+            return task
+
+    raise HTTPException(
+        status_code=404,
+        detail=f"Task {task_id} not found"
+    )
+
+
+# DELETE - Delete an existing task
+@app.delete(
+    "/tasks/{task_id}",
+    status_code=status.HTTP_204_NO_CONTENT
+)
+def delete_task(task_id: int):
+
+    for index, task in enumerate(tasks):
+
+        if task["id"] == task_id:
+            tasks.pop(index)
+            return None
+
+    raise HTTPException(
+        status_code=404,
+        detail=f"Task {task_id} not found"
+    )
