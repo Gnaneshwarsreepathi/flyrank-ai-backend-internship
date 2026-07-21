@@ -1,4 +1,6 @@
 venv/
+.venv/
 __pycache__/
 *.pyc
 .env
+week-3/tasks.db
