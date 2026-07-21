@@ -1,8 +1,9 @@
+from contextlib import closing
 from pathlib import Path
 from typing import Optional
 import sqlite3
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Response
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
@@ -22,6 +23,11 @@ class TaskCreate(BaseModel):
     title: Optional[str] = None
 
 
+class TaskUpdate(BaseModel):
+    title: Optional[str] = None
+    done: Optional[bool] = None
+
+
 def get_database_connection():
     connection = sqlite3.connect(DATABASE_PATH)
     connection.row_factory = sqlite3.Row
@@ -29,7 +35,7 @@ def get_database_connection():
 
 
 def initialize_database():
-    with get_database_connection() as connection:
+    with closing(get_database_connection()) as connection:
 
         connection.execute(
             """
@@ -92,7 +98,7 @@ def health_check():
 
 @app.get("/tasks")
 def get_tasks():
-    with get_database_connection() as connection:
+    with closing(get_database_connection()) as connection:
 
         rows = connection.execute(
             """
@@ -107,7 +113,7 @@ def get_tasks():
 
 @app.get("/tasks/{task_id}")
 def get_task(task_id: int):
-    with get_database_connection() as connection:
+    with closing(get_database_connection()) as connection:
 
         row = connection.execute(
             """
@@ -137,7 +143,7 @@ def create_task(task: TaskCreate):
 
     clean_title = task.title.strip()
 
-    with get_database_connection() as connection:
+    with closing(get_database_connection()) as connection:
 
         cursor = connection.execute(
             """
@@ -160,3 +166,93 @@ def create_task(task: TaskCreate):
         ).fetchone()
 
         return row_to_task(new_task)
+
+
+@app.put("/tasks/{task_id}")
+def update_task(task_id: int, task: TaskUpdate):
+    if task.title is None and task.done is None:
+        return JSONResponse(
+            status_code=400,
+            content={"error": "Provide title or done"}
+        )
+
+    if task.title is not None and not task.title.strip():
+        return JSONResponse(
+            status_code=400,
+            content={"error": "Title cannot be blank"}
+        )
+
+    with closing(get_database_connection()) as connection:
+
+        existing_task = connection.execute(
+            """
+            SELECT id
+            FROM tasks
+            WHERE id = ?
+            """,
+            (task_id,)
+        ).fetchone()
+
+        if existing_task is None:
+            return JSONResponse(
+                status_code=404,
+                content={"error": "Task not found"}
+            )
+
+        update_fields = []
+        update_values = []
+
+        if task.title is not None:
+            update_fields.append("title = ?")
+            update_values.append(task.title.strip())
+
+        if task.done is not None:
+            update_fields.append("done = ?")
+            update_values.append(int(task.done))
+
+        update_values.append(task_id)
+
+        connection.execute(
+            f"""
+            UPDATE tasks
+            SET {", ".join(update_fields)}
+            WHERE id = ?
+            """,
+            update_values
+        )
+
+        connection.commit()
+
+        updated_task = connection.execute(
+            """
+            SELECT id, title, done
+            FROM tasks
+            WHERE id = ?
+            """,
+            (task_id,)
+        ).fetchone()
+
+        return row_to_task(updated_task)
+
+
+@app.delete("/tasks/{task_id}", status_code=204)
+def delete_task(task_id: int):
+    with closing(get_database_connection()) as connection:
+
+        cursor = connection.execute(
+            """
+            DELETE FROM tasks
+            WHERE id = ?
+            """,
+            (task_id,)
+        )
+
+        if cursor.rowcount == 0:
+            return JSONResponse(
+                status_code=404,
+                content={"error": "Task not found"}
+            )
+
+        connection.commit()
+
+        return Response(status_code=204)
