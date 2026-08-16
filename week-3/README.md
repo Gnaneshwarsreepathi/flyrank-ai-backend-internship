@@ -348,3 +348,39 @@ This assignment demonstrates:
 - Returning correct HTTP status codes
 - Testing database persistence
 - Exploring SQLite using DB Browser
+
+---
+
+# A3 — Containerize Your Stack
+
+## Overview
+
+For Week 3 Assignment A3, the existing FastAPI task service was containerized using Docker.
+
+The application runs in a Docker container and exposes the API on port `8000`.
+
+## Docker Setup
+
+The stack includes:
+
+- Python 3.12
+- FastAPI
+- Uvicorn
+- SQLite
+- Docker
+- Docker Compose
+
+The application is built using the `Dockerfile` and started using `docker-compose.yml`.
+
+## Environment Variables
+
+The database configuration is provided through `.env`.
+
+The `.env` file is gitignored and `.env.example` is committed to the repository as a template.
+
+## Running the Application
+
+Build the Docker image:
+
+```bash
+docker compose build
