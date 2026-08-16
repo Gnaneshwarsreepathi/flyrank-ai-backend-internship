@@ -1,6 +1,7 @@
 from contextlib import closing
 from pathlib import Path
 from typing import Optional
+import os
 import sqlite3
 
 from fastapi import FastAPI, Response
@@ -16,7 +17,10 @@ app = FastAPI(
 
 
 BASE_DIR = Path(__file__).resolve().parent
-DATABASE_PATH = BASE_DIR / "tasks.db"
+
+DATABASE_PATH = Path(
+    os.getenv("DATABASE_PATH", str(BASE_DIR / "tasks.db"))
+)
 
 
 class TaskCreate(BaseModel):
@@ -26,6 +30,8 @@ class TaskCreate(BaseModel):
 class TaskUpdate(BaseModel):
     title: Optional[str] = None
     done: Optional[bool] = None
+
+
 
 
 def get_database_connection():
@@ -252,6 +258,7 @@ def delete_task(task_id: int):
                 status_code=404,
                 content={"error": "Task not found"}
             )
+        
 
         connection.commit()
 
