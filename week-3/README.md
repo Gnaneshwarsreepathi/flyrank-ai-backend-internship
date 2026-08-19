@@ -1,8 +1,25 @@
-# Week 3 — FastAPI CRUD API with SQLite
+# Week 3 — FastAPI CRUD API with SQLite & PostgreSQL Docker
 
-This project extends the Week 2 Task Manager API by replacing the temporary in-memory Python list with a persistent SQLite database.
+This project extends the Week 2 Task Manager API by replacing temporary in-memory storage with persistent database storage.
 
-The application supports complete CRUD operations and preserves task data after the FastAPI server restarts.
+Week 3 contains two assignments:
+
+- **A2 — Connecting CRUD to the Database**
+- **A3 — Containerize Your Stack**
+
+The project demonstrates CRUD operations, database persistence, PostgreSQL, Docker, Docker Compose, environment variables, and persistent Docker volumes.
+
+---
+
+# A2 — Connecting CRUD to the Database
+
+## Overview
+
+The original Week 2 application stored tasks in a temporary in-memory Python list.
+
+For A2, the storage layer was replaced with a persistent SQLite database.
+
+The API continues to expose the same CRUD endpoints while task data now survives FastAPI server restarts.
 
 ## Features
 
@@ -37,350 +54,610 @@ week-3/
 │   └── swagger-crud-overview.png
 ├── main.py
 ├── README.md
-└── requirements.txt
-```
+├── requirements.txt
+├── Dockerfile
+├── docker-compose.yml
+├── .env.example
+└── sql/
+    └── init.sql
 
-The `tasks.db` file is generated automatically when the application starts. It is excluded from Git using `.gitignore`.
 
-## Database Schema
 
-The application automatically creates the following table:
 
-```sql
+SQLite Database Schema
+
+The SQLite application automatically creates the following table:
+
 CREATE TABLE IF NOT EXISTS tasks (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     title TEXT NOT NULL,
     done INTEGER NOT NULL DEFAULT 0
 );
-```
-
-| Column | Type | Description |
-|---|---|---|
-| `id` | INTEGER | Unique task identifier |
-| `title` | TEXT | Task title |
-| `done` | INTEGER | Task completion status |
+Column	Type	Description
+id	INTEGER	Unique task identifier
+title	TEXT	Task title
+done	INTEGER	Task completion status
 
 SQLite stores Boolean values as integers:
 
-```text
 0 = false
 1 = true
-```
 
 The API converts SQLite values into JSON Boolean values.
 
-## Automatic Database Initialization
+Automatic Database Initialization
 
 When the application starts:
 
-1. SQLite creates `tasks.db` when it does not exist.
-2. The application creates the `tasks` table.
-3. The application checks how many tasks are stored.
-4. Three starter tasks are inserted only when the table is empty.
+SQLite creates tasks.db when it does not exist.
+The application creates the tasks table.
+The application checks how many tasks are stored.
+Three starter tasks are inserted only when the table is empty.
 
 This prevents duplicate seed tasks when the server restarts.
 
-## API Endpoints
-
-| Method | Endpoint | Description | Success Code |
-|---|---|---|---:|
-| GET | `/` | Welcome message | 200 |
-| GET | `/health` | Health check | 200 |
-| GET | `/tasks` | Get all tasks | 200 |
-| GET | `/tasks/{task_id}` | Get one task | 200 |
-| POST | `/tasks` | Create a task | 201 |
-| PUT | `/tasks/{task_id}` | Update a task | 200 |
-| DELETE | `/tasks/{task_id}` | Delete a task | 204 |
-
-## Example Requests
-
-### Create a task
-
-```http
+API Endpoints
+Method	Endpoint	Description	Success Code
+GET	/	Welcome message	200
+GET	/health	Health check	200
+GET	/tasks	Get all tasks	200
+GET	/tasks/{task_id}	Get one task	200
+POST	/tasks	Create a task	201
+PUT	/tasks/{task_id}	Update a task	200
+DELETE	/tasks/{task_id}	Delete a task	204
+Example Requests
+Create a Task
 POST /tasks
-```
 
 Request body:
 
-```json
 {
   "title": "Practice SQLite"
 }
-```
 
 Example response:
 
-```json
 {
   "id": 4,
   "title": "Practice SQLite",
   "done": false
 }
-```
-
-### Update a task
-
-```http
+Update a Task
 PUT /tasks/1
-```
 
 Request body:
 
-```json
 {
   "title": "Learn advanced SQLite",
   "done": true
 }
-```
 
 Example response:
 
-```json
 {
   "id": 1,
   "title": "Learn advanced SQLite",
   "done": true
 }
-```
-
-### Delete a task
-
-```http
+Delete a Task
 DELETE /tasks/1
-```
 
 Successful deletion returns:
 
-```text
 204 No Content
-```
 
-A successful `204` response does not contain a response body.
+A successful 204 response does not contain a response body.
 
-## Error Handling
-
-### Task not found
+Error Handling
+Task Not Found
 
 Status:
 
-```text
 404 Not Found
-```
 
 Response:
 
-```json
 {
   "error": "Task not found"
 }
-```
-
-### Missing or blank task title
+Missing or Blank Task Title
 
 Status:
 
-```text
 400 Bad Request
-```
 
 Response:
 
-```json
 {
   "error": "Title is required"
 }
-```
-
-### Empty update request
+Empty Update Request
 
 Status:
 
-```text
 400 Bad Request
-```
 
 Response:
 
-```json
 {
   "error": "Provide title or done"
 }
-```
-
-### Blank title during update
+Blank Title During Update
 
 Status:
 
-```text
 400 Bad Request
-```
 
 Response:
 
-```json
 {
   "error": "Title cannot be blank"
 }
-```
-
-## SQL Queries Explored
+SQL Queries Explored
 
 The SQLite database was manually explored using DB Browser for SQLite.
 
-### View all tasks
-
-```sql
+View All Tasks
 SELECT * FROM tasks;
-```
-
-### View completed tasks
-
-```sql
+View Completed Tasks
 SELECT * FROM tasks WHERE done = 1;
-```
-
-### Count all tasks
-
-```sql
+Count All Tasks
 SELECT COUNT(*) FROM tasks;
-```
-
-### Mark all tasks as completed
-
-```sql
+Mark All Tasks as Completed
 UPDATE tasks SET done = 1;
-```
-
-### Delete completed tasks
-
-```sql
+Delete Completed Tasks
 DELETE FROM tasks WHERE done = 1;
-```
 
-Changes made manually in DB Browser were reflected in the FastAPI responses because both applications use the same `tasks.db` file.
+Changes made manually in DB Browser were reflected in the FastAPI responses because both applications use the same tasks.db file.
 
-## How to Run the Project
-
-### 1. Clone the repository
-
-```bash
+How to Run A2 — SQLite
+1. Clone the Repository
 git clone https://github.com/Gnaneshwarsreepathi/flyrank-ai-backend-internship.git
-```
-
-### 2. Enter the Week 3 folder
-
-```bash
+2. Enter the Week 3 Folder
 cd flyrank-ai-backend-internship/week-3
-```
-
-### 3. Create a virtual environment
+3. Create a Virtual Environment
 
 Windows:
 
-```powershell
 py -m venv venv
-```
-
-### 4. Activate the virtual environment
+4. Activate the Virtual Environment
 
 PowerShell:
 
-```powershell
 .\venv\Scripts\Activate.ps1
-```
-
-### 5. Install the dependencies
-
-```powershell
+5. Install Dependencies
 python -m pip install -r requirements.txt
-```
-
-### 6. Start the FastAPI server
-
-```powershell
+6. Start FastAPI
 uvicorn main:app --reload
-```
-
-### 7. Open Swagger documentation
-
-```text
+7. Open Swagger Documentation
 http://127.0.0.1:8000/docs
-```
-
-### 8. View all tasks
-
-```text
+8. View All Tasks
 http://127.0.0.1:8000/tasks
-```
+SQLite Database Persistence Test
 
-## Database Persistence Test
+Database persistence was verified using the following steps:
 
-Database persistence was verified using these steps:
-
-1. A new task was created using `POST /tasks`.
-2. The FastAPI server was stopped.
-3. The server was started again.
-4. The created task was still available through `GET /tasks`.
+A new task was created using POST /tasks.
+The FastAPI server was stopped.
+The server was started again.
+The created task was still available through GET /tasks.
 
 This confirms that task data is stored permanently in SQLite instead of a temporary Python list.
 
-## Screenshots
+Screenshots
+Swagger CRUD API
 
-### Swagger CRUD API
+The Swagger interface demonstrates the available CRUD endpoints.
 
-![Swagger CRUD API](images/swagger-crud-overview.png)
+SQLite Database Exploration
 
-### SQLite Database Exploration
+DB Browser for SQLite was used to inspect the database and execute SQL queries manually.
 
-![SQLite Database Exploration](images/sqlite-exploration.png)
+A3 — Containerize Your Stack
+Overview
 
-## Learning Outcomes
+For A3, the backend application was containerized using Docker.
 
-This assignment demonstrates:
+The application and PostgreSQL database run together using Docker Compose.
 
-- Connecting FastAPI with SQLite
-- Creating databases and tables automatically
-- Executing SQL CRUD operations
-- Using parameterized SQL queries
-- Converting database rows into JSON
-- Managing SQLite database connections
-- Validating API request bodies
-- Returning correct HTTP status codes
-- Testing database persistence
-- Exploring SQLite using DB Browser
+The final architecture is:
 
----
+Client
+   |
+   v
+FastAPI Application
+   |
+   v
+PostgreSQL Database
+   |
+   v
+Docker Persistent Volume
 
-# A3 — Containerize Your Stack
+The goal of A3 is to run the complete backend stack using one command.
 
-## Overview
+Technologies Used for A3
+Python 3.12
+FastAPI
+Uvicorn
+PostgreSQL 16
+Docker
+Docker Compose
+SQL
+Environment Variables
+Docker Volumes
+PostgreSQL Database
 
-For Week 3 Assignment A3, the existing FastAPI task service was containerized using Docker.
+For A3, the database layer was changed from the SQLite implementation used in A2 to PostgreSQL.
 
-The application runs in a Docker container and exposes the API on port `8000`.
+PostgreSQL runs inside its own Docker container.
 
-## Docker Setup
+The FastAPI application connects to PostgreSQL using a database connection string stored in the .env file.
 
-The stack includes:
+The database connection is not hard-coded into the application.
 
-- Python 3.12
-- FastAPI
-- Uvicorn
-- SQLite
-- Docker
-- Docker Compose
+Environment Variables
 
-The application is built using the `Dockerfile` and started using `docker-compose.yml`.
+The PostgreSQL connection string is stored in .env.
 
-## Environment Variables
+Example:
 
-The database configuration is provided through `.env`.
+DATABASE_URL=postgresql://postgres:postgres@db:5432/tasks
 
-The `.env` file is gitignored and `.env.example` is committed to the repository as a template.
+The .env file is intentionally excluded from Git.
 
-## Running the Application
+A .env.example file is included in the repository as a template.
 
-Build the Docker image:
+Example .env.example:
 
-```bash
+DATABASE_URL=postgresql://postgres:postgres@db:5432/tasks
+PostgreSQL Repository
+
+The database storage implementation was replaced with a PostgreSQL repository.
+
+The repository is responsible for:
+
+Creating tasks
+Reading tasks
+Reading a task by ID
+Updating tasks
+Deleting tasks
+
+The service and API routes remain unchanged.
+
+This demonstrates separation between the API layer and the data layer.
+
+The architecture is:
+
+Client
+   |
+   v
+FastAPI Routes
+   |
+   v
+Service Layer
+   |
+   v
+PostgreSQL Repository
+   |
+   v
+PostgreSQL Database
+PostgreSQL Database Schema
+
+The PostgreSQL table is created using:
+
+sql/init.sql
+
+The initialization script creates the tasks table if it does not already exist.
+
+Example:
+
+CREATE TABLE IF NOT EXISTS tasks (
+    id SERIAL PRIMARY KEY,
+    title TEXT NOT NULL,
+    done BOOLEAN NOT NULL DEFAULT FALSE
+);
+Docker Setup
+
+The application is built using the Dockerfile.
+
+The complete stack is managed using:
+
+docker-compose.yml
+
+The stack contains two main services:
+
+app
+db
+App Service
+
+The app service runs the FastAPI application.
+
+Database Service
+
+The db service runs PostgreSQL 16.
+
+A named Docker volume is attached to PostgreSQL so database data survives container restarts.
+
+Build the Docker Image
+
+Run:
+
 docker compose build
+Start the Complete Stack
+
+Run:
+
+docker compose up -d --build
+
+This command:
+
+Builds the FastAPI application image
+Starts the FastAPI container
+Starts the PostgreSQL container
+Creates the Docker network
+Creates the PostgreSQL persistent volume
+Initializes the database
+Check Running Containers
+
+Run:
+
+docker compose ps
+
+The application and PostgreSQL containers should be running.
+
+View Application Logs
+
+Run:
+
+docker compose logs -f app
+
+The FastAPI application runs on:
+
+http://0.0.0.0:8000
+
+From the host machine, the API is available at:
+
+http://localhost:8000
+Swagger Documentation
+
+FastAPI automatically provides interactive API documentation.
+
+Open:
+
+http://localhost:8000/docs
+
+Alternative documentation:
+
+http://localhost:8000/redoc
+Test the API
+Get All Tasks
+curl http://localhost:8000/tasks
+Get Task by ID
+curl http://localhost:8000/tasks/1
+Create a Task
+
+Using Swagger:
+
+POST /tasks
+
+Example request:
+
+{
+  "title": "Docker persistence test"
+}
+Update a Task
+PUT /tasks/1
+
+Example request:
+
+{
+  "title": "Updated Docker task",
+  "done": true
+}
+Delete a Task
+DELETE /tasks/1
+PostgreSQL Persistence Test
+
+Persistence was tested by creating tasks and restarting the application and database containers.
+
+Step 1 — Start the Stack
+docker compose up -d --build
+Step 2 — Create a Task
+
+Create a task using Swagger:
+
+POST /tasks
+
+Example:
+
+{
+  "title": "Persistence Test"
+}
+Step 3 — Verify the Task
+curl http://localhost:8000/tasks
+
+The created task should appear.
+
+Step 4 — Stop the Containers
+docker compose down
+Step 5 — Start the Stack Again
+docker compose up -d
+Step 6 — Verify the Data
+curl http://localhost:8000/tasks
+
+The previously created task should still exist.
+
+This proves that PostgreSQL data persists across container restarts using the Docker volume.
+
+Docker Volume
+
+PostgreSQL uses a named Docker volume to persist database data.
+
+Stopping the stack with:
+
+docker compose down
+
+does not remove the named volume.
+
+To completely remove the database and its stored data:
+
+docker compose down -v
+
+Use docker compose down -v only when intentionally resetting the database.
+
+Useful Docker Commands
+Build
+docker compose build
+Start
+docker compose up -d
+Build and Start
+docker compose up -d --build
+Check Containers
+docker compose ps
+View Application Logs
+docker compose logs -f app
+View Database Logs
+docker compose logs -f db
+Stop Containers
+docker compose down
+Stop Containers and Remove Database Volume
+docker compose down -v
+Access PostgreSQL
+
+PostgreSQL can be accessed directly from the database container.
+
+Run:
+
+docker compose exec db psql -U postgres -d tasks
+
+Then run SQL queries.
+
+View All Tasks
+SELECT * FROM tasks;
+Count Tasks
+SELECT COUNT(*) FROM tasks;
+View Completed Tasks
+SELECT * FROM tasks WHERE done = TRUE;
+
+Exit PostgreSQL:
+
+\q
+Final Architecture
+                         Client
+                           |
+                           v
+                  +------------------+
+                  |   FastAPI App    |
+                  |   Port 8000      |
+                  +--------+---------+
+                           |
+                           v
+                  +------------------+
+                  |   PostgreSQL     |
+                  |   Port 5432      |
+                  +--------+---------+
+                           |
+                           v
+                  +------------------+
+                  | Docker Volume    |
+                  | Persistent Data  |
+                  +------------------+
+A2 → A3 Progression
+
+The project demonstrates the evolution of the backend application.
+
+A2
+Client
+   |
+   v
+FastAPI
+   |
+   v
+SQLite
+A3
+Client
+   |
+   v
+FastAPI Container
+   |
+   v
+PostgreSQL Container
+   |
+   v
+Docker Persistent Volume
+
+The API contract remains unchanged while the storage implementation and infrastructure are improved.
+
+Assignment Requirements
+A2 — Connecting CRUD to Database
+ CRUD API maintained
+ SQLite database implemented
+ Database created automatically
+ Tasks table created automatically
+ Three starter tasks inserted only when the table is empty
+ CRUD operations implemented using SQL
+ Data survives application restart
+ Unknown IDs return 404
+ Invalid requests return appropriate errors
+ SQLite database manually explored using SQL
+A3 — Containerize Your Stack
+ PostgreSQL runs in Docker
+ PostgreSQL uses a persistent Docker volume
+ Database connection uses .env
+ .env is gitignored
+ .env.example is committed
+ SQL initialization file is provided
+ PostgreSQL repository implemented
+ FastAPI application containerized
+ Docker Compose used
+ Application and database start together
+ CRUD API remains unchanged
+ Database persistence tested across container restart
+Learning Outcomes
+
+This project demonstrates practical knowledge of:
+
+FastAPI
+REST API development
+CRUD operations
+SQL
+SQLite
+PostgreSQL
+Database repositories
+Separation of API and data layers
+Environment variables
+Docker
+Docker Compose
+Docker volumes
+Database initialization
+Persistent storage
+API testing
+PostgreSQL CLI
+Conclusion
+
+Week 3 demonstrates how a backend application can evolve from temporary in-memory storage to persistent database storage and finally into a containerized application.
+
+The API contract remains the same while the underlying storage and infrastructure are changed.
+
+Week 2
+Client → FastAPI → In-Memory List
+
+
+A2
+Client → FastAPI → SQLite
+
+
+A3
+Client → FastAPI Container → PostgreSQL Container → Docker Volume
+
+The final application can be started using:
+
+docker compose up -d --build
+
+The API is available at:
+
+http://localhost:8000
+
+Swagger documentation:
+
+http://localhost:8000/docs
