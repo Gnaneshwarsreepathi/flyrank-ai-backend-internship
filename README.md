@@ -20,7 +20,7 @@ The internship focuses on developing practical backend engineering skills throug
   - SQLite database
   - SQL CRUD operations
   - Database persistence
-  - Database initialization
+  - Automatic database initialization
   - SQL queries and database exploration
 
 - **A3 — Containerize Your Stack**
