@@ -31,15 +31,17 @@ This project was developed as part of the FlyRank Backend AI Engineering Interns
 ## Project Structure
 
 ```text
-week-4-auth-api/
+week-4/
 ├── main.py
 ├── requirements.txt
+├── README.md
 ├── .gitignore
-├── .env
-└── README.md
+└── images/
+    ├── image1.jpeg
+    └── image2.jpeg
 ```
 
-> `.env` is excluded from Git and must never be committed.
+> The `.env` file contains sensitive Supabase credentials and must never be committed to Git.
 
 ## Environment Variables
 
@@ -57,20 +59,20 @@ Do not commit your actual `.env` file.
 Clone the repository:
 
 ```bash
-git clone YOUR_GITHUB_REPOSITORY_URL
-cd YOUR_REPOSITORY_NAME
+git clone https://github.com/Gnaneshwarsreepathi/flyrank-ai-backend-internship.git
+cd flyrank-ai-backend-internship/week-4
 ```
 
 Create a virtual environment:
 
 ```bash
-python -m venv venv
+python3 -m venv venv
 ```
 
-Activate it on Windows:
+Activate it on macOS/Linux:
 
-```powershell
-.\venv\Scripts\Activate.ps1
+```bash
+source venv/bin/activate
 ```
 
 Install dependencies:
@@ -123,13 +125,14 @@ A successful login returns an access token and refresh token.
 
 For protected routes, use the access token as a Bearer token.
 
-In Swagger UI:
+### Using Swagger UI
 
-1. Login using `/auth/login`.
-2. Copy the `access_token`.
-3. Click **Authorize**.
-4. Enter the access token.
-5. Access the protected endpoints.
+1. Open `/docs`.
+2. Register or log in using `/auth/signup` or `/auth/login`.
+3. Copy the `access_token` returned by the login request.
+4. Click **Authorize**.
+5. Enter the access token.
+6. Call the protected endpoints.
 
 ## HTTP Status Codes
 
@@ -141,15 +144,17 @@ In Swagger UI:
 | 400 | Missing or invalid input |
 | 401 | Missing, invalid, or expired authentication token |
 
-## Swagger UI
+## Swagger UI Screenshots
 
-Swagger provides interactive API documentation and Bearer token authentication.
+### Swagger API Overview
 
-Add your Swagger screenshot here:
+![Swagger API Overview](images/image1.jpeg)
 
-```markdown
-![Swagger UI](screenshots/swagger.png)
-```
+### Swagger Endpoint Details
+
+![Swagger Endpoint Details](images/image2.jpeg)
+
+The screenshots above show the FastAPI Swagger/OpenAPI documentation for the Week 4 Authentication API, including the available authentication, public, and protected endpoints.
 
 ## Security
 
@@ -161,7 +166,7 @@ JWT access tokens are verified using Supabase Authentication before protected en
 
 ## Author
 
-Konda Pranavi
+Gnaneshwar Sreepathi
 
 FlyRank Backend AI Engineering Internship  
-Week 4 - Auth: Login & Protect
+Week 4 - Authentication API
