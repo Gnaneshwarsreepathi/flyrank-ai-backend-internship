@@ -46,6 +46,9 @@ The model output is not trusted directly. The application parses and validates t
 ├── logs/
 ├── prompts/
 │   └── triage-v1.md
+├── images/
+│   ├── image1.jpeg
+│   └── image2.jpeg
 ├── src/
 │   ├── llm/
 │   │   ├── client.py
@@ -117,6 +120,20 @@ Interactive API documentation is available at:
 ```text
 http://127.0.0.1:8000/docs
 ```
+
+---
+
+## API Documentation Screenshots
+
+The following screenshots show the Week 6 API running locally and the generated FastAPI Swagger documentation.
+
+### API Health Check
+
+![AI Support Triage API running locally](images/image1.jpeg)
+
+### Swagger / OpenAPI Documentation
+
+![AI Support Triage API Swagger documentation](images/image2.jpeg)
 
 ---
 
@@ -495,7 +512,7 @@ Correct: 8/8
 Match rate: 100.00%
 ```
 
-All eight expected category labels matched the API output in this evaluation run.
+All eight expected category labels matched the API output in this evaluation run, giving a 100.00% match rate.
 
 ---
 
