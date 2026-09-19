@@ -1,0 +1,6 @@
+[33m2436328[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m)[m Stage 5: survive failures, report the run
+[33m20a852d[m Stage 4: validate normalized records
+[33m191f3ea[m Stage 3: extract book details
+[33m42b0efc[m Stage 2: discover three catalogue pages
+[33m6de8a6f[m Stage 1: fetch and cache HTML
+[33m564932c[m Stage 0: classify scraping target

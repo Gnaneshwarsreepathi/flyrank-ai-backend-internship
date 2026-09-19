@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1,
+    "text": "I was charged twice for my subscription this month.",
+    "expected_category": "billing"
+  },
+  {
+    "id": 2,
+    "text": "My payment went through but my account still says unpaid.",
+    "expected_category": "billing"
+  },
+  {
+    "id": 3,
+    "text": "The app crashes every time I upload a PDF.",
+    "expected_category": "bug"
+  },
+  {
+    "id": 4,
+    "text": "The save button does nothing when I click it.",
+    "expected_category": "bug"
+  },
+  {
+    "id": 5,
+    "text": "Please add dark mode to the dashboard.",
+    "expected_category": "feature"
+  },
+  {
+    "id": 6,
+    "text": "It would be useful if I could export reports to Excel.",
+    "expected_category": "feature"
+  },
+  {
+    "id": 7,
+    "text": "Hello, I just wanted to say hi.",
+    "expected_category": "other"
+  },
+  {
+    "id": 8,
+    "text": "Something feels different today but I cannot explain what is wrong.",
+    "expected_category": "other"
+  }
+]

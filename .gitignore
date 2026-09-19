@@ -1,6 +1,16 @@
+# Python virtual environments
 venv/
-.env
-.DS_Store
+.venv/
+
+# Python cache
 __pycache__/
 *.pyc
-*.db
+
+# macOS
+.DS_Store
+
+# Week 5 generated cache
+week-5/cache/
+
+# Week 6 generated logs
+week-6/logs/

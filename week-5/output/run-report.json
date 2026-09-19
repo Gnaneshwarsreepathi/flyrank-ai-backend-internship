@@ -1,0 +1,16 @@
+{
+  "started_at": "2026-09-18T17:48:28.232091Z",
+  "finished_at": "2026-09-18T17:48:31.013734Z",
+  "duration_seconds": 2.78,
+  "pages_fetched": 1,
+  "cache_hits": 63,
+  "valid_records": 0,
+  "invalid_records": 60,
+  "failed_pages": 1,
+  "failures": [
+    {
+      "url": "https://books.toscrape.com/catalogue/flyrank-deliberately-broken-book/index.html",
+      "reason": "HTTP 404"
+    }
+  ]
+}
